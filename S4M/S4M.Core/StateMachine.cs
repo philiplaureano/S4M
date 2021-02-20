@@ -6,7 +6,7 @@ using Optional;
 
 namespace S4M.Core
 {
-    public abstract class StateMachine
+    public abstract class StateMachine : IStateMachine
     {
         private ConcurrentDictionary<Func<object, bool>, Action<object>> _currentState =
             new ConcurrentDictionary<Func<object, bool>, Action<object>>();
@@ -27,7 +27,7 @@ namespace S4M.Core
             _stashImplementation = new StashImplementation(_stash, _mailbox);
         }
 
-        public async Task TellAsync(object message)
+        public async Task TellAsync(object message, CancellationToken cancellationToken)
         {
             var waitUntilDispatchTableBuilt = Task.CompletedTask;
             if (!_hasStateBeenInitialized)
@@ -35,34 +35,37 @@ namespace S4M.Core
                 await BuildNewDispatchTableAsync();
                 _hasStateBeenInitialized = true;
                 
-                waitUntilDispatchTableBuilt = Task.Run(async () =>
+                waitUntilDispatchTableBuilt = Task.Run(() =>
                 {
-                    while (_isBuildingState)
+                    while (_isBuildingState && !cancellationToken.IsCancellationRequested)
                     {
                         // Spin until the state is built
                     }
-                });
+                }, cancellationToken);
             }
 
             await waitUntilDispatchTableBuilt;
-            await DispatchPendingMailboxMessages();
+            await DispatchPendingMailboxMessages(cancellationToken);
             
             // Handle the current message
-            await DispatchAsync(message);
+            await DispatchAsync(message, cancellationToken);
         }
 
-        private async Task DispatchPendingMailboxMessages()
+        private async Task DispatchPendingMailboxMessages(CancellationToken cancellationToken)
         {
-            while (_mailbox.TryDequeue(out var nextMessage))
+            while (!cancellationToken.IsCancellationRequested && _mailbox.TryDequeue(out var nextMessage))
             {
-                await DispatchAsync(nextMessage);
+                await DispatchAsync(nextMessage, cancellationToken);
             }
         }
 
-        private async Task DispatchAsync(object message)
+        private async Task DispatchAsync(object message, CancellationToken cancellationToken)
         {
             foreach (var predicate in _currentState.Keys)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+                
                 if (!predicate(message))
                     continue;
 
@@ -80,10 +83,10 @@ namespace S4M.Core
                     // and process the stashed messages
                     
                     // Handle the unstashed messages first
-                    await DispatchPendingMailboxMessages();
+                    await DispatchPendingMailboxMessages(cancellationToken);
                     
                     // Push the current message onto the mailbox
-                    await DispatchAsync(message);
+                    await DispatchAsync(message, cancellationToken);
                 }
                 catch (StashException)
                 {
@@ -122,7 +125,9 @@ namespace S4M.Core
             }
         }
 
+#pragma warning disable 1998
         private async Task BuildNewDispatchTableAsync()
+#pragma warning restore 1998
         {
             // Build the new dispatch table
             var newState = new ConcurrentDictionary<Func<object, bool>, Action<object>>();

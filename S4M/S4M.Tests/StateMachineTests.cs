@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using S4M.Core;
 using S4M.Tests.Samples;
 using Xunit;
 
