@@ -9,7 +9,7 @@ namespace S4M.Core
     /// </summary>
     internal class StashException : Exception
     {
-        public StashException()
+        internal StashException()
         {
         }
     }

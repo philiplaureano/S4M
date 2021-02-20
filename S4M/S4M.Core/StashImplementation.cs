@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Linq;
 using Optional;
 using Optional.Unsafe;
 
@@ -33,25 +34,19 @@ namespace S4M.Core
             throw new StashException();
         }
 
-        public void Unstash()
-        {
-            if (_currentStash.IsEmpty)
-                return;
-
-            // If Unstash is called, pull one message
-            // off the stash and place it in the inbox
-            if (_currentStash.TryDequeue(out var currentItem))
-                _currentMailbox.Enqueue(currentItem);
-        }
-
         public void UnstashAll()
         {
             // If UnstashAll was called, empty the stash back onto the inbox
+            var numberOfMessagesToUnstash = _currentStash.Count();
             while (!_currentStash.IsEmpty)
             {
                 if (_currentStash.TryDequeue(out var currentItem))
                     _currentMailbox.Enqueue(currentItem);
             }
+
+            // Jump out of the method if and only if there are messages to unstash
+            if (numberOfMessagesToUnstash > 0)
+                throw new UnstashAllException();
         }
     }
 }

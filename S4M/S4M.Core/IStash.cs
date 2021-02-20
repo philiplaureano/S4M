@@ -3,7 +3,6 @@
     public interface IStash
     {
         void Stash();
-        void Unstash();
         void UnstashAll();
     }
 }

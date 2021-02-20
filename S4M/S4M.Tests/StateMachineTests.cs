@@ -24,20 +24,20 @@ namespace S4M.Tests
             {
                 await stasher.TellAsync(msg);
             }
-            
+
             // Enable stashing and ensure that the correct number of messages have been handled and stashed
             stasher.EnableStashing = true;
             foreach (var msg in messagesToStash)
             {
                 await stasher.TellAsync(msg);
             }
-            
+
             // Ensure that both lists match the expected results
             foreach (var msg in messagesToSend)
             {
                 Assert.Contains(msg, stasher.MessagesHandled);
             }
-            
+
             foreach (var msg in messagesToStash)
             {
                 Assert.Contains(msg, stasher.MessagesStashed);
@@ -48,15 +48,30 @@ namespace S4M.Tests
             "The state machine should allow its derived classes to unstash all of the stashed messages")]
         public async Task ShouldBeAbleToUnstashAllStashedMessages()
         {
-            throw new NotImplementedException("TODO: Implement the ShouldBeAbleToUnstashAllStashedMessages test");
-        }
+            var numberOfMessagesToStash = 42;
+            var messagesToStash = Enumerable.Range(0, numberOfMessagesToStash).Select(_ => Guid.NewGuid()).ToArray();
 
-        [Fact(DisplayName =
-            "The state machine should handle stashed messages after they are unsta shed by a derived class")]
-        public async Task ShouldHandleStashedMessagesAfterUnstashingThem()
-        {
-            throw new NotImplementedException(
-                "TODO: Implement the ShouldHandleStashedMessagesAfterUnstashingThem test");
+            var unstasher = new SampleUnstasher();
+
+            // Push the messages and have the unstasher stash every message coming in
+            foreach (var msg in messagesToStash)
+            {
+                await unstasher.TellAsync(msg);
+            }
+
+            // Match the number of messages stashed
+            Assert.Equal(numberOfMessagesToStash, unstasher.MessagesStashed.Count());
+
+            // Enable the message processing, which should trigger the UnstashAll() call that will
+            // pop all the stashed messages into the mailbox
+            unstasher.StartHandlingMessages();
+
+            // Tell the unstasher to handle one message, which should trigger the message handling for
+            // the previously stashed messages
+            await unstasher.TellAsync(Guid.NewGuid());
+
+            var expectedNumberOfHandledMessages = numberOfMessagesToStash + 1;
+            Assert.Equal(expectedNumberOfHandledMessages, unstasher.MessagesHandled.Count());
         }
 
         [Fact(DisplayName = "The state machine should allow its derived classes to change state")]

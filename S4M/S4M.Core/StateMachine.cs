@@ -45,14 +45,18 @@ namespace S4M.Core
             }
 
             await waitUntilDispatchTableBuilt;
+            await DispatchPendingMailboxMessages();
             
+            // Handle the current message
+            await DispatchAsync(message);
+        }
+
+        private async Task DispatchPendingMailboxMessages()
+        {
             while (_mailbox.TryDequeue(out var nextMessage))
             {
                 await DispatchAsync(nextMessage);
             }
-            
-            // Handle the current message
-            await DispatchAsync(message);
         }
 
         private async Task DispatchAsync(object message)
@@ -68,6 +72,18 @@ namespace S4M.Core
                     // Give the stash handler the next message to potentially stash
                     _stashImplementation.SetNextMessage(Option.Some(message));
                     currentAction?.Invoke(message);
+                }
+                catch (UnstashAllException)
+                {
+                    // Ignore the error here since the exception means that the caller
+                    // wants to pop the contents of the mailbox onto the stack
+                    // and process the stashed messages
+                    
+                    // Handle the unstashed messages first
+                    await DispatchPendingMailboxMessages();
+                    
+                    // Push the current message onto the mailbox
+                    await DispatchAsync(message);
                 }
                 catch (StashException)
                 {
