@@ -1,6 +1,6 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-using S4M.Core;
 using S4M.Tests.Samples;
 using Xunit;
 
@@ -11,7 +11,37 @@ namespace S4M.Tests
         [Fact(DisplayName = "The state machine should allow its derived classes to stash messages")]
         public async Task ShouldBeAbleToStashMessages()
         {
-            throw new NotImplementedException("TODO: Implement the ShouldBeAbleToStashMessages test");
+            var numberOfMessagesToStash = 42;
+            var numberOfMessagesToSend = 1;
+
+            var messagesToSend = Enumerable.Range(0, numberOfMessagesToSend).Select(_ => Guid.NewGuid()).ToArray();
+            var messagesToStash = Enumerable.Range(0, numberOfMessagesToStash).Select(_ => Guid.NewGuid()).ToArray();
+
+            var stasher = new SampleStasher();
+
+            // Add the messages that should be handled normally
+            foreach (var msg in messagesToSend)
+            {
+                await stasher.TellAsync(msg);
+            }
+            
+            // Enable stashing and ensure that the correct number of messages have been handled and stashed
+            stasher.EnableStashing = true;
+            foreach (var msg in messagesToStash)
+            {
+                await stasher.TellAsync(msg);
+            }
+            
+            // Ensure that both lists match the expected results
+            foreach (var msg in messagesToSend)
+            {
+                Assert.Contains(msg, stasher.MessagesHandled);
+            }
+            
+            foreach (var msg in messagesToStash)
+            {
+                Assert.Contains(msg, stasher.MessagesStashed);
+            }
         }
 
         [Fact(DisplayName =

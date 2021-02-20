@@ -11,8 +11,8 @@ namespace S4M.Tests.Samples
     public class SampleCircuitBreaker : StateMachine
     {
         private readonly Action<object> _commandHandler;
-        private readonly ConcurrentBag<object> _handledMessages = new ConcurrentBag<object>();
-        private readonly ConcurrentBag<Exception> _exceptionsThrown = new ConcurrentBag<Exception>();
+        private readonly ConcurrentBag<object> _handledMessages = new();
+        private readonly ConcurrentBag<Exception> _exceptionsThrown = new();
 
         public SampleCircuitBreaker(Action<object> commandHandler)
         {
