@@ -1,37 +1,40 @@
-## Welcome to GitHub Pages
+# S4M.Core - A Short, Simple, and Straightforward State (S4) Machine Library for .NET
 
-You can use the [editor on GitHub](https://github.com/philiplaureano/S4M/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
+## Overview
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+S4M is a state machine library that I built to simplify building more resilient components in a distributed system. It was inspired by [this article](https://petabridge.com/blog/akka-actors-finite-state-machines-switchable-behavior/) from [Akka.NET](https://getakka.net/) that uses Actors with switchable behaviours to create components that can effectively manage themselves.
 
-### Markdown
+### Why another state machine library?
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+- I created S4M as a way to introduce other developers to some of the broader features that [Akka.NET](https://getakka.net/) offers, such as the Become/Unbecome/Stash behaviours that give it its resiliency
+- I wanted a FSM library that was lightweight, simple, and easy to maintain, and a library that can give its users the same kind of "smart" switching behaviours that Akka.NET offers because its actors can change state, such as:
+	- Fault Tolerance
+	- Throttling
+	- Circuit breakers
 
-```markdown
-Syntax highlighted code block
+### What makes S4M different from all the other .NET FSM libraries out there?
 
-# Header 1
-## Header 2
-### Header 3
+#### Features
 
-- Bulleted
-- List
+- Infinite states with an almost infinite number of handlers, all encapsulated in a single class per state machine
+- State transitions are defined within a state machine derived class itself, so you don't need to declare all the possible transitions at once
+- You can 'stash' or defer messages that the state machine should not handle in its current state, and 'unstash' all of the stashed messages in a different state so that a state machine can do things like resume processing after a database connection has been restored, for example.
 
-1. Numbered
-2. List
+### Why not just use [Akka.NET](https://getakka.net/) instead of reinventing your own library?
 
-**Bold** and _Italic_ and `Code` text
+- Akka.NET is an excellent library, but it might be overkill in many cases. S4M just focuses on building the state machine itself. I personally recommend using Akka.NET for bigger jobs, but if you want to start lean or you want to migrate your existing legacy codebase to be more resilient, then having S4M state machines is a good "gateway drug" to Akka.NET
 
-[Link](url) and ![Image](src)
-```
+## Installing the MetaFoo NuGet Package 
+### Prerequisites
+- S4M:
+  - [Runs on .NET Standard 2.0 compatible binaries](https://dotnet.microsoft.com/platform/dotnet-standard)
+  - [Requires .NET 5 to build the source code](https://dotnet.microsoft.com/download/dotnet/5.0)
+  - You can find the repository for S4M [here](https://github.com/philiplaureano/S4M)
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+You can [download the package here](https://www.nuget.org/packages/Laureano.S4M.Core/) from NuGet.
 
-### Jekyll Themes
+## License
+ S4M is [licensed under the MIT License](https://opensource.org/licenses/MIT). It comes with no free warranties expressed or implied, whatsoever.
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/philiplaureano/S4M/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+## Questions, Comments, or Feedback?
+- Feel free to [follow me](http://twitter.com/philiplaureano) on Twitter.
