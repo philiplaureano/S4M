@@ -35,16 +35,15 @@ S4M is a state machine library that I built to simplify building more resilient 
 
 You can [download the package here](https://www.nuget.org/packages/Laureano.S4M.Core/) from NuGet.
 ### The Quick Start Guide
+
 1. Grab the [S4M NuGet package here](https://www.nuget.org/packages/Laureano.S4M.Core/)
 2. Inherit your state machine from the StateMachine class, just like in this example:
-
 ```
 	public class SampleCircuitBreaker : StateMachine
 	{
 		// ...
 	}
 ```
-
 3. Define the initial states as well as the message handlers that will respond to each message as your custom state machine changes state. You can define these handlers inside individual Receive&lt;T&gt; handler methods which will determine how each state responds to a particular message:
 ```
 	private void Closed()
