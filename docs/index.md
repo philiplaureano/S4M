@@ -38,15 +38,15 @@ You can [download the package here](https://www.nuget.org/packages/Laureano.S4M.
 1. Grab the [S4M NuGet package here](https://www.nuget.org/packages/Laureano.S4M.Core/)
 2. Inherit your state machine from the StateMachine class, just like in this example:
 
-
+```
 	public class SampleCircuitBreaker : StateMachine
 	{
 		// ...
 	}
-
+```
 
 3. Define the initial states as well as the message handlers that will respond to each message as your custom state machine changes state. You can define these handlers inside individual Receive&lt;T&gt; handler methods which will determine how each state responds to a particular message:
-
+```
 	private void Closed()
 	{
 	    Receive<object>(msg =>
@@ -84,18 +84,18 @@ You can [download the package here](https://www.nuget.org/packages/Laureano.S4M.
 	        }
 	    });
 	}
-
+```
 4. Set your initial state in the class constructor, using the Become method, like this:
-
+```
     public SampleCircuitBreaker(/*...*/)
     {
     	// ...
     	Become(Closed);
 	}
-
+```
 5. If you need to stash/defer the current message instead of handling it, call `Stash.Stash()` method from within a Receive handler.
 6. To unstash all the messages that have been deferred from another state (such as a list of database commands that have been deferred due to a database server outage), call the `Stash.UnstashAll()` method. Here is a complete example:
-
+```
     public class SampleUnstasher : StateMachine
     {
         private readonly ConcurrentBag<object> _messagesHandled = new();
@@ -130,13 +130,15 @@ You can [download the package here](https://www.nuget.org/packages/Laureano.S4M.
         public IEnumerable<object> MessagesStashed => _messagesStashed;
         public IEnumerable<object> MessagesHandled => _messagesHandled;
     }
-
+```
 7. And lastly, if you want to use your new state machine, create a new instance of it and call the `TellAsync` method:
-
+```
     var myFSM = new SampleUnstasher();
     var someRandomMessage = Guid.NewGuid();
     await myFSM.TellAsync(someRandomMessage);
+```
 
+And that's pretty much all you need to get started 😁
 
 ## License
  S4M is [licensed under the MIT License](https://opensource.org/licenses/MIT). It comes with no free warranties expressed or implied, whatsoever.
