@@ -139,6 +139,8 @@ You can [download the package here](https://www.nuget.org/packages/Laureano.S4M.
 
 And that's pretty much all you need to get started 😁
 
+## ChangeLog
+You can find the list of the latest changes [here](CHANGELOG.md).
 ## License
  S4M is [licensed under the MIT License](https://opensource.org/licenses/MIT). It comes with no free warranties expressed or implied, whatsoever.
 
