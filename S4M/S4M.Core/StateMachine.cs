@@ -29,19 +29,19 @@ namespace S4M.Core
 
         public async Task TellAsync(object message, CancellationToken cancellationToken)
         {
-            var waitUntilDispatchTableBuilt = Task.CompletedTask;
+            // Block the task/thread if we're in the middle of a state change
+            var waitUntilDispatchTableBuilt = Task.Run(() =>
+            {
+                while (_isBuildingState && !cancellationToken.IsCancellationRequested)
+                {
+                    // Spin until the state is built
+                }
+            }, cancellationToken);
+            
             if (!_hasStateBeenInitialized)
             {
                 await BuildNewDispatchTableAsync();
                 _hasStateBeenInitialized = true;
-                
-                waitUntilDispatchTableBuilt = Task.Run(() =>
-                {
-                    while (_isBuildingState && !cancellationToken.IsCancellationRequested)
-                    {
-                        // Spin until the state is built
-                    }
-                }, cancellationToken);
             }
 
             await waitUntilDispatchTableBuilt;
