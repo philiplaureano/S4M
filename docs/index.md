@@ -17,7 +17,7 @@ S4M is a state machine library that I built to simplify building more resilient 
 
 #### Features
 
-- If you familiar with C# async/await features, inheritance, and are familiar with how to use lambda functions or delegates in C#, you can get S4M up and running in minutes
+- If you are familiar with C# async/await features, inheritance, and are familiar with how to use lambda functions or delegates in C#, you can get S4M up and running in minutes
 - Infinite states with an almost infinite number of handlers, all encapsulated in a single class per state machine
 - State transitions are defined within a state machine derived class itself, so you don't need to declare all the possible transitions at once
 - You can 'stash' or defer messages that the state machine should not handle in its current state, and 'unstash' all of the stashed messages in a different state so that a state machine can do things like resume processing after a database connection has been restored, for example.
