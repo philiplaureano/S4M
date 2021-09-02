@@ -3,7 +3,10 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http:--keepachangelog.com-)
 and this project adheres to [Semantic Versioning](http:--semver.org-).
- 
+## 2021-09-02
+### Changed
+- S4M.Core [1.0.4] - Updated to support .NET 5, .NET Standard 2.0, and .NET Standard 2.1
+- S4M.Timers [1.0.4] - Updated to support .NET 5, .NET Standard 2.0, and .NET Standard 2.1
 ## 2021-03-29
 ### Unreleased
 - S4M.Reactive [1.0.4] - Support for the fixed rate buffer sampling, which aggregates items into groups for batch processing downstream

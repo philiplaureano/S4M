@@ -2,7 +2,6 @@
 
     <PropertyGroup>
         <Authors>Philip Laureano</Authors>
-        <TargetFramework>netstandard2.0</TargetFramework>
         <PackageId>Laureano.S4M.Core</PackageId>
         <Product>Laureano.S4M.Core</Product>
         <Title>S4M</Title>
@@ -16,6 +15,7 @@
         <AssemblyVersion>$(Version)</AssemblyVersion>
         <FileVersion>$(Version)</FileVersion>
         <LangVersion>default</LangVersion>
+        <TargetFrameworks>net5.0;netstandard2.0;netstandard2.1</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
